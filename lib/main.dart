@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_bloc_gym_app/blocs/workout_cubit.dart';
 import 'package:flutter_bloc_gym_app/blocs/workouts_cubit.dart';
 import 'package:flutter_bloc_gym_app/models/workout.dart';
+import 'package:flutter_bloc_gym_app/screens/home_page.dart';
+import 'package:flutter_bloc_gym_app/states/workout_state.dart';
 
 void main() => runApp(const WorkoutTime());
 
@@ -18,22 +21,33 @@ class WorkoutTime extends StatelessWidget {
           bodyMedium: TextStyle(color: Color.fromARGB(255, 66, 74, 96)),
         ),
       ),
-      home: BlocProvider<WorkoutsCubit>(
-        create: (context) {
-          WorkoutsCubit workoutsCubit = WorkoutsCubit();
-          if (workoutsCubit.state.isEmpty) {
-            workoutsCubit.getWorkouts();
-          }
-          return workoutsCubit;
-        },
-        child: BlocBuilder<WorkoutsCubit, List<Workout>>(
+      home: MultiBlocProvider(
+        providers: [
+          BlocProvider<WorkoutsCubit>(
+            create: (context) {
+              WorkoutsCubit workoutsCubit = WorkoutsCubit();
+              if (workoutsCubit.state.isEmpty) {
+                workoutsCubit.getWorkouts();
+              }
+              return workoutsCubit;
+            },
+          ),
+          BlocProvider<WorkoutCubit>(create: (context) => WorkoutCubit())
+        ],
+        child: BlocBuilder<WorkoutCubit, WorkoutState>(
           builder: (context, state) {
-            return const Center(
-              child: Text('aaaaa'),
-            );
+            if(state is WorkoutInitialState){
+              print(11111);
+              return const HomePage();
+            }
+            if(state is WorkoutEditingState){
+              print(222222);
+              return Container();
+            }
+            return Container();
           },
         ),
-      ),
+      )
     );
   }
 }

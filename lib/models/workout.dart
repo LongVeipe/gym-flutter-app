@@ -28,6 +28,10 @@ class Workout extends Equatable{
         'exercises': exercises,
       };
 
+  int getTotal(){
+    int time = exercises.fold(0, (previousValue, element) => previousValue + element.duration! + element.prelude!);
+    return time;
+  }
   @override
   List<Object?> get props => [title, exercises];
 
